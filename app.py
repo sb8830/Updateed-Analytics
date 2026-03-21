@@ -44,15 +44,11 @@ def _get_logo_b64() -> str:
         return base64.b64encode(p.read_bytes()).decode()
     return ""
 
-LOGO_B64 = _get_logo_b64()
-LOGO_SRC  = f"data:image/png;base64,{LOGO_B64}" if LOGO_B64 else ""
+LOGO_B64  = "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"
+LOGO_SRC  = "data:image/png;base64," + LOGO_B64
 LOGO_HTML = (
     f'<img src="{LOGO_SRC}" style="width:38px;height:38px;border-radius:50%;'
     f'object-fit:cover;border:2px solid rgba(79,206,143,.4);flex-shrink:0">'
-    if LOGO_SRC else
-    '<div style="width:38px;height:38px;background:linear-gradient(135deg,#1a6ab5,#4fce8f);'
-    'border-radius:50%;display:flex;align-items:center;justify-content:center;'
-    'font-size:20px;font-weight:900;color:#fff;flex-shrink:0">i</div>'
 )
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -62,9 +58,9 @@ def _hash(pw: str) -> str:
     return hashlib.sha256(pw.encode()).hexdigest()
 
 USERS = {
-    "admin":   {"hash": _hash("invesmate@2024"), "role": "admin",  "name": "Admin"},
-    "analyst": {"hash": _hash("analyst@123"),    "role": "viewer", "name": "Analyst"},
-    "manager": {"hash": _hash("manager@123"),    "role": "viewer", "name": "Manager"},
+    "admin":   {"hash": _hash("invesmate@2024"), "role": "admin",  "name": "Admin",    "suspended": False, "reset_token": ""},
+    "analyst": {"hash": _hash("analyst@123"),    "role": "viewer", "name": "Analyst",  "suspended": False, "reset_token": ""},
+    "manager": {"hash": _hash("manager@123"),    "role": "viewer", "name": "Manager",  "suspended": False, "reset_token": ""},
 }
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -232,11 +228,7 @@ body,.stApp{{background:#060910}}
   color:#eceef5;text-align:center;margin:0 0 4px;letter-spacing:-.6px}}
 .lc-sub{{font-size:11px;color:#4a5068;text-align:center;margin-bottom:32px;
   text-transform:uppercase;letter-spacing:.9px}}
-.demo-box{{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
-  border-radius:10px;padding:14px 16px;margin-top:20px}}
-.demo-title{{font-size:10px;color:#4a5068;font-weight:700;text-transform:uppercase;
-  letter-spacing:.6px;margin-bottom:8px}}
-.demo-cred{{font-size:11px;color:#8a90aa;line-height:1.9}}
+
 </style>
 <div class="login-shell">
   <div class="login-card">
@@ -257,24 +249,17 @@ body,.stApp{{background:#060910}}
         if st.button("Sign In  →", use_container_width=True, type="primary", key="lbtn"):
             user = USERS.get((username or '').strip().lower())
             if user and user['hash'] == _hash(password or ''):
-                st.session_state.logged_in = True
-                st.session_state.username  = username.strip().lower()
-                st.session_state.role      = user['role']
-                st.session_state.user_name = user['name']
-                st.session_state.page      = 'home'
-                st.rerun()
+                if user.get('suspended', False):
+                    st.error("🚫 Your account has been suspended. Contact admin.")
+                else:
+                    st.session_state.logged_in = True
+                    st.session_state.username  = username.strip().lower()
+                    st.session_state.role      = user['role']
+                    st.session_state.user_name = user['name']
+                    st.session_state.page      = 'home'
+                    st.rerun()
             else:
                 st.error("❌ Invalid credentials. Try again.")
-        st.markdown("""
-<div class="demo-box">
-  <div class="demo-title">Demo credentials</div>
-  <div class="demo-cred">
-    👑 <strong style="color:#f7c948">admin</strong> / invesmate@2024<br>
-    👤 <strong style="color:#4f8ef7">analyst</strong> / analyst@123<br>
-    👤 <strong style="color:#4f8ef7">manager</strong> / manager@123
-  </div>
-</div>
-""", unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -443,37 +428,42 @@ def show_admin():
     st.markdown(f"""
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-.adm-wrap{{max-width:1000px;margin:0 auto;padding:30px 24px 60px}}
-.adm-hdr{{display:flex;align-items:center;gap:14px;margin-bottom:28px}}
+.adm-wrap{{max-width:1060px;margin:0 auto;padding:28px 24px 60px}}
+.adm-hdr{{display:flex;align-items:center;gap:14px;margin-bottom:26px}}
 .adm-title{{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#eceef5}}
 .adm-sub{{font-size:11px;color:#4a5068;margin-top:2px}}
-.adm-sec{{background:#0c1018;border:1px solid rgba(255,255,255,.07);
-  border-radius:14px;padding:22px 24px;margin-bottom:18px}}
-.adm-sec-title{{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;
-  color:#f7c948;margin-bottom:16px;text-transform:uppercase;letter-spacing:.8px;
-  display:flex;align-items:center;gap:7px}}
-.stat-grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}}
+.adm-sec{{background:#0c1018;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:22px 24px;margin-bottom:18px}}
+.adm-sec-title{{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:#f7c948;
+  margin-bottom:16px;text-transform:uppercase;letter-spacing:.8px;display:flex;align-items:center;gap:7px}}
+.stat-grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}}
 .stat-card{{background:#111520;border:1px solid rgba(255,255,255,.06);border-radius:12px;
   padding:16px 18px;position:relative;overflow:hidden}}
 .stat-card::before{{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--c,#4f8ef7)}}
 .stat-v{{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:#eceef5;line-height:1}}
 .stat-l{{font-size:10px;color:#4a5068;text-transform:uppercase;letter-spacing:.6px;margin-top:6px}}
-.user-row{{display:flex;align-items:center;justify-content:space-between;
-  padding:11px 0;border-bottom:1px solid rgba(255,255,255,.04)}}
-.user-row:last-child{{border-bottom:none}}
+.ut-head{{display:grid;grid-template-columns:1.8fr 1fr 0.8fr 0.8fr 2.6fr;gap:10px;
+  padding:8px 14px;background:#111520;border-radius:8px;margin-bottom:6px}}
+.ut-head span{{font-size:9px;font-weight:700;color:#4a5068;text-transform:uppercase;letter-spacing:.7px}}
+.ut-row{{display:grid;grid-template-columns:1.8fr 1fr 0.8fr 0.8fr 2.6fr;gap:10px;
+  padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.04);align-items:center}}
+.ut-row:last-child{{border-bottom:none}}
+.ut-row:hover{{background:rgba(255,255,255,.02);border-radius:8px}}
 .uname{{font-size:13px;font-weight:600;color:#eceef5}}
-.umeta{{font-size:11px;color:#4a5068;margin-top:1px}}
-.badg-a{{background:rgba(247,201,72,.1);border:1px solid rgba(247,201,72,.2);
-  border-radius:8px;padding:2px 8px;font-size:10px;font-weight:700;color:#f7c948}}
-.badg-v{{background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.2);
-  border-radius:8px;padding:2px 8px;font-size:10px;font-weight:700;color:#4f8ef7}}
+.umeta{{font-size:10px;color:#4a5068;margin-top:1px}}
+.badg{{border-radius:8px;padding:2px 8px;font-size:10px;font-weight:700;display:inline-block}}
+.badg-a{{background:rgba(247,201,72,.1);border:1px solid rgba(247,201,72,.2);color:#f7c948}}
+.badg-v{{background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.2);color:#4f8ef7}}
+.badg-s{{background:rgba(247,111,79,.1);border:1px solid rgba(247,111,79,.2);color:#f76f4f}}
+.badg-ok{{background:rgba(79,206,143,.1);border:1px solid rgba(79,206,143,.2);color:#4fce8f}}
+.reset-token-box{{background:#060910;border:1px solid rgba(247,201,72,.2);border-radius:8px;
+  padding:10px 14px;margin-top:8px;font-family:monospace;font-size:12px;color:#f7c948;word-break:break-all}}
 </style>
 <div class="adm-wrap">
   <div class="adm-hdr">
     {logo_sm}
     <div>
       <div class="adm-title">Admin Panel</div>
-      <div class="adm-sub">Manage users, credentials and system settings</div>
+      <div class="adm-sub">Manage users, credentials and access control</div>
     </div>
   </div>
 </div>
@@ -481,79 +471,180 @@ def show_admin():
 
     st.markdown('<div class="adm-wrap">', unsafe_allow_html=True)
 
-    # System stats
-    st.markdown("""<div class="adm-sec">
+    # ── System Stats ──────────────────────────────────────────────────────────
+    total_users    = len(USERS)
+    active_users   = sum(1 for u in USERS.values() if not u.get('suspended', False))
+    suspended_users= total_users - active_users
+    admin_users    = sum(1 for u in USERS.values() if u['role'] == 'admin')
+
+    st.markdown(f"""<div class="adm-sec">
   <div class="adm-sec-title">📊 System Overview</div>
   <div class="stat-grid">
-    <div class="stat-card" style="--c:#4f8ef7"><div class="stat-v">3</div><div class="stat-l">Total Users</div></div>
-    <div class="stat-card" style="--c:#f7c948"><div class="stat-v">1</div><div class="stat-l">Admin Accounts</div></div>
-    <div class="stat-card" style="--c:#4fce8f"><div class="stat-v">3</div><div class="stat-l">Dashboards</div></div>
-    <div class="stat-card" style="--c:#b44fe7"><div class="stat-v">8</div><div class="stat-l">Dashboard Tabs</div></div>
+    <div class="stat-card" style="--c:#4f8ef7"><div class="stat-v">{total_users}</div><div class="stat-l">Total Users</div></div>
+    <div class="stat-card" style="--c:#4fce8f"><div class="stat-v">{active_users}</div><div class="stat-l">Active</div></div>
+    <div class="stat-card" style="--c:#f76f4f"><div class="stat-v">{suspended_users}</div><div class="stat-l">Suspended</div></div>
+    <div class="stat-card" style="--c:#f7c948"><div class="stat-v">{admin_users}</div><div class="stat-l">Admins</div></div>
+    <div class="stat-card" style="--c:#b44fe7"><div class="stat-v">3</div><div class="stat-l">Dashboards</div></div>
+    <div class="stat-card" style="--c:#4fd8f7"><div class="stat-v">8</div><div class="stat-l">Dashboard Tabs</div></div>
   </div>
 </div>""", unsafe_allow_html=True)
 
-    # Users list
-    st.markdown('<div class="adm-sec"><div class="adm-sec-title">👥 User Accounts</div>', unsafe_allow_html=True)
-    for uname, ud in USERS.items():
-        badge = '<span class="badg-a">Admin</span>' if ud['role']=='admin' else '<span class="badg-v">Viewer</span>'
-        st.markdown(f"""<div class="user-row">
-  <div><div class="uname">{ud['name']} <span style="color:#4a5068;font-weight:400">@{uname}</span></div>
-       <div class="umeta">Role: {ud['role']}</div></div>
-  <div>{badge}</div>
-</div>""", unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True)
+    # ── User Management Table ─────────────────────────────────────────────────
+    st.markdown('''<div class="adm-sec">
+  <div class="adm-sec-title">👥 User Management</div>
+  <div class="ut-head">
+    <span>User</span><span>Role</span><span>Status</span>
+    <span>Actions</span><span></span>
+  </div>''', unsafe_allow_html=True)
 
-    # Add user
+    for uname, ud in list(USERS.items()):
+        is_suspended = ud.get('suspended', False)
+        is_self      = uname == st.session_state.username
+        role_badge   = f'<span class="badg badg-a">Admin</span>' if ud['role']=='admin' else f'<span class="badg badg-v">Viewer</span>'
+        status_badge = f'<span class="badg badg-s">Suspended</span>' if is_suspended else f'<span class="badg badg-ok">Active</span>'
+
+        st.markdown(f"""<div class="ut-row">
+  <div>
+    <div class="uname">{ud['name']} {'<span style="font-size:10px;color:#4fce8f">(you)</span>' if is_self else ''}</div>
+    <div class="umeta">@{uname}</div>
+  </div>
+  <div>{role_badge}</div>
+  <div>{status_badge}</div>
+  <div></div><div></div>
+</div>""", unsafe_allow_html=True)
+
+        # Action buttons for each user
+        cols = st.columns([1.8, 1, 0.8, 0.8, 0.65, 0.65, 0.65, 0.65])
+        # col offset to align under "Actions" column
+        with cols[4]:
+            # Toggle suspend (can't suspend yourself)
+            if not is_self:
+                susp_label = "▶ Activate" if is_suspended else "⏸ Suspend"
+                if st.button(susp_label, key=f"susp_{uname}", use_container_width=True):
+                    USERS[uname]['suspended'] = not is_suspended
+                    action = "activated" if is_suspended else "suspended"
+                    st.success(f"✅ {ud['name']} {action}.")
+                    st.rerun()
+
+        with cols[5]:
+            # Toggle role (can't change own role)
+            if not is_self:
+                new_role = "admin" if ud['role'] == "viewer" else "viewer"
+                role_btn = "→ Admin" if new_role == "admin" else "→ Viewer"
+                if st.button(role_btn, key=f"role_{uname}", use_container_width=True):
+                    USERS[uname]['role'] = new_role
+                    st.success(f"✅ {ud['name']} is now {new_role}.")
+                    st.rerun()
+
+        with cols[6]:
+            # Generate reset token
+            import secrets
+            if st.button("🔑 Reset", key=f"rst_{uname}", use_container_width=True):
+                token = secrets.token_urlsafe(12)
+                USERS[uname]['reset_token'] = token
+                st.session_state[f'show_token_{uname}'] = token
+                st.rerun()
+
+        with cols[7]:
+            # Delete user (can't delete yourself or last admin)
+            admin_count = sum(1 for u in USERS.values() if u['role'] == 'admin')
+            can_delete  = not is_self and not (ud['role'] == 'admin' and admin_count <= 1)
+            if can_delete:
+                if st.button("🗑 Delete", key=f"del_{uname}", use_container_width=True):
+                    st.session_state[f'confirm_del_{uname}'] = True
+                    st.rerun()
+
+        # Show reset token if generated
+        if st.session_state.get(f'show_token_{uname}'):
+            token_val = st.session_state[f'show_token_{uname}']
+            st.markdown(f'''<div class="reset-token-box">
+  🔑 Temporary reset token for <strong>{uname}</strong>:<br>
+  <strong>{token_val}</strong><br>
+  <span style="font-size:10px;color:#4a5068;font-family:'DM Sans',sans-serif">
+  Share this token with the user. They must change password after logging in.</span>
+</div>''', unsafe_allow_html=True)
+            if st.button(f"✖ Dismiss", key=f"dis_{uname}"):
+                del st.session_state[f'show_token_{uname}']
+                st.rerun()
+
+        # Delete confirmation
+        if st.session_state.get(f'confirm_del_{uname}'):
+            st.warning(f"⚠️ Delete **{ud['name']}** (@{uname})? This cannot be undone.")
+            ca, cb_ = st.columns(2)
+            with ca:
+                if st.button(f"✅ Yes, delete {uname}", key=f"cd_yes_{uname}", type="primary"):
+                    del USERS[uname]
+                    if f'confirm_del_{uname}' in st.session_state:
+                        del st.session_state[f'confirm_del_{uname}']
+                    st.success(f"✅ User {uname} deleted.")
+                    st.rerun()
+            with cb_:
+                if st.button("✖ Cancel", key=f"cd_no_{uname}"):
+                    del st.session_state[f'confirm_del_{uname}']
+                    st.rerun()
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # ── Add New User ──────────────────────────────────────────────────────────
     st.markdown('<div class="adm-sec"><div class="adm-sec-title">➕ Add New User</div>', unsafe_allow_html=True)
     c1,c2,c3,c4 = st.columns(4)
-    nu = c1.text_input("Username",    key="nu", placeholder="username")
-    nn = c2.text_input("Display Name",key="nn", placeholder="Full Name")
-    np_= c3.text_input("Password",    key="np", placeholder="password", type="password")
-    nr = c4.selectbox("Role",["viewer","admin"], key="nr")
+    nu  = c1.text_input("Username",     key="nu",  placeholder="username")
+    nn  = c2.text_input("Display Name", key="nn",  placeholder="Full Name")
+    np_ = c3.text_input("Password",     key="np_", placeholder="password", type="password")
+    nr  = c4.selectbox("Role", ["viewer","admin"], key="nr")
     if st.button("➕ Add User", key="au_btn", type="primary"):
         if nu and nn and np_:
             if nu.lower() in USERS:
                 st.warning(f"⚠️ '{nu}' already exists.")
             else:
-                USERS[nu.lower()] = {"hash":_hash(np_),"role":nr,"name":nn}
-                st.success(f"✅ User '{nu}' added as {nr}. (Add to USERS dict in app.py to persist.)")
+                USERS[nu.lower()] = {"hash":_hash(np_),"role":nr,"name":nn,"suspended":False,"reset_token":""}
+                st.success(f"✅ User '{nu}' added as {nr}.")
+                st.rerun()
         else:
             st.warning("Fill all fields.")
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    # Change password
+    # ── Change Password ───────────────────────────────────────────────────────
     st.markdown('<div class="adm-sec"><div class="adm-sec-title">🔑 Change Password</div>', unsafe_allow_html=True)
     c1,c2,c3 = st.columns(3)
-    cpu = c1.selectbox("User", list(USERS.keys()), key="cpu")
-    cpn = c2.text_input("New Password",     key="cpn", type="password")
-    cpc = c3.text_input("Confirm Password", key="cpc", type="password")
-    if st.button("🔑 Update", key="cp_btn"):
-        if cpn and cpn==cpc:
+    cpu = c1.selectbox("Select User", list(USERS.keys()), key="cpu")
+    cpn = c2.text_input("New Password",     key="cpn", type="password", placeholder="new password")
+    cpc = c3.text_input("Confirm Password", key="cpc", type="password", placeholder="confirm")
+    if st.button("🔑 Update Password", key="cp_btn", type="primary"):
+        if cpn and cpn == cpc:
             USERS[cpu]['hash'] = _hash(cpn)
-            st.success(f"✅ Password updated for {cpu}")
+            USERS[cpu]['reset_token'] = ""
+            st.success(f"✅ Password updated for {cpu}.")
         elif cpn != cpc:
-            st.error("Passwords don't match.")
+            st.error("❌ Passwords don't match.")
         else:
             st.warning("Enter a new password.")
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    # Credentials reference
-    st.markdown("""<div class="adm-sec">
-  <div class="adm-sec-title">📋 Credentials Reference</div>
-  <div style="background:#060910;border:1px solid rgba(255,255,255,.06);border-radius:10px;
-    padding:16px;font-family:monospace;font-size:12px;color:#4fce8f;line-height:2">
-    admin &nbsp;&nbsp;&nbsp;&nbsp;→ invesmate@2024 &nbsp;(Admin)<br>
-    analyst &nbsp;→ analyst@123 &nbsp;&nbsp;&nbsp;(Viewer)<br>
-    manager &nbsp;→ manager@123 &nbsp;&nbsp;&nbsp;(Viewer)
-  </div>
-  <div style="margin-top:12px;font-size:11px;color:#4a5068;line-height:1.7">
-    ⚠️ Users added via this panel persist for the current session only.<br>
-    To make permanent: add them to the <strong style="color:#eceef5">USERS</strong> dict in
-    <strong style="color:#eceef5">app.py</strong> or use Streamlit's
-    <strong style="color:#eceef5">st.secrets</strong>.
-  </div>
-</div>
-</div>""", unsafe_allow_html=True)
+    # ── Forgot / Reset Password Flow ──────────────────────────────────────────
+    st.markdown('<div class="adm-sec"><div class="adm-sec-title">🔐 Forgot Password — Reset Lookup</div>', unsafe_allow_html=True)
+    st.markdown('<p style="font-size:12px;color:#4a5068;margin-bottom:14px">Enter the reset token given to the user to set a new password.</p>', unsafe_allow_html=True)
+    c1,c2,c3 = st.columns(3)
+    rt_token = c1.text_input("Reset Token", key="rt_tok", placeholder="paste token here")
+    rt_new   = c2.text_input("New Password", key="rt_new", type="password", placeholder="new password")
+    rt_conf  = c3.text_input("Confirm",      key="rt_conf", type="password", placeholder="confirm")
+    if st.button("✅ Apply Reset", key="rt_btn", type="primary"):
+        matched = next((u for u, ud in USERS.items()
+                        if ud.get('reset_token') and ud['reset_token'] == rt_token.strip()), None)
+        if not matched:
+            st.error("❌ Invalid or expired token.")
+        elif not rt_new:
+            st.warning("Enter a new password.")
+        elif rt_new != rt_conf:
+            st.error("❌ Passwords don't match.")
+        else:
+            USERS[matched]['hash'] = _hash(rt_new)
+            USERS[matched]['reset_token'] = ""
+            st.success(f"✅ Password reset for @{matched}. Token cleared.")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
 
 # ──────────────────────────────────────────────────────────────────────────────
 # ROUTER
