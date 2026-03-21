@@ -13,8 +13,10 @@ import json
 import os
 from pathlib import Path
 from data_processor import process_all
-import base64
 
+import base64
+from pathlib import Path
+_HERE = Path(__file__).resolve().parent
 def get_base64_image(image_path):
     with open(image_path, "rb") as f:
         return base64.b64encode(f.read()).decode()
