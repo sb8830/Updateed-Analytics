@@ -3,14 +3,31 @@ app.py  —  Invesmate Analytics Dashboard  (Streamlit)
 """
 import streamlit as st
 import streamlit.components.v1 as components
-import json, os, base64, hashlib, secrets
+import json, os, base64, hashlib, secrets, io
 from pathlib import Path
+from PIL import Image
 from data_processor import process_all
 
 # ─── PAGE CONFIG ──────────────────────────────────────────────────────────────
+# Load logo for browser tab (must happen before set_page_config)
+def _get_page_icon():
+    _h = Path(__file__).resolve().parent
+    for _p in [_h/'logo.png', Path(os.getcwd())/'logo.png']:
+        if _p.exists():
+            try:
+                return Image.open(_p)
+            except Exception:
+                pass
+    for _p in Path(os.getcwd()).rglob('logo.png'):
+        try:
+            return Image.open(_p)
+        except Exception:
+            pass
+    return "📊"
+
 st.set_page_config(
     page_title="Invesmate Analytics",
-    page_icon="📊",
+    page_icon=_get_page_icon(),
     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -189,7 +206,12 @@ def render_navbar(active: str = 'home'):
             if st.button(label, key=f'nb_{action}', use_container_width=True,
                          type="primary" if is_active else "secondary"):
                 if action == 'logout':
+                    # Preserve user store and pending queue across sessions
+                    _users   = st.session_state.get('users', {})
+                    _pending = st.session_state.get('pending', [])
                     for k in list(st.session_state.keys()): del st.session_state[k]
+                    st.session_state.users   = _users
+                    st.session_state.pending = _pending
                 else:
                     st.session_state.page = action
                 st.rerun()
