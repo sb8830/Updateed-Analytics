@@ -189,7 +189,7 @@ def show_upload_page():
     </style>
     <div class="upload-wrap">
       <div class="upload-hero">
-        <div class="upload-logo"><img src="logo.jpg" style="width:100%; height:100%; border-radius:20px;"></div>
+        <div class="upload-logo"><img src="logo.png" style="width:100%;height:100%;object-fit:contain;background:transparent;"></div>
         <h1>Invesmate Analytics Hub</h1>
         <p>Upload your Excel files · Get 3 interactive dashboards instantly</p>
       </div>
