@@ -19,7 +19,7 @@ from data_processor import process_all
 # ──────────────────────────────────────────────────────────────────────────────
 st.set_page_config(
     page_title="Invesmate Analytics Dashboard",
-    page_icon="📊",
+    page_icon="logo.png",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
