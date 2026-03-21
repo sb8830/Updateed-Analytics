@@ -17,7 +17,7 @@ import base64
 def get_base64_image(image_path):
     with open(image_path, "rb") as f:
         return base64.b64encode(f.read()).decode()
-logo_base64 = get_base64_image(_HERE / "logo.png")
+      logo_base64 = get_base64_image(_HERE / "logo.png")
 # ──────────────────────────────────────────────────────────────────────────────
 # PAGE CONFIG
 # ──────────────────────────────────────────────────────────────────────────────
@@ -28,7 +28,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-st.markdown(f"""
+st.markdown("""
 <style>
   #MainMenu, footer, header { visibility: hidden; }
   .block-container { padding: 0 !important; max-width: 100% !important; }
@@ -156,7 +156,7 @@ def build_all_dashboards(data: dict) -> dict:
 # ──────────────────────────────────────────────────────────────────────────────
 
 def show_upload_page():
-    st.markdown(f"""
+    st.markdown("""
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
       .upload-wrap { max-width:900px; margin:60px auto; padding:0 20px; font-family:'DM Sans',sans-serif; }
@@ -193,7 +193,7 @@ def show_upload_page():
     </style>
     <div class="upload-wrap">
       <div class="upload-hero">
-        <div class="upload-logo">
+       <div class="upload-logo">
   <img src="data:image/png;base64,{logo_base64}" 
        style="width:100%;height:100%;object-fit:contain;background:transparent;">
 </div>
@@ -220,7 +220,7 @@ def show_upload_page():
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.markdown(f"""<div style="background:#0c1018;border:1px solid rgba(255,255,255,.06);
+        st.markdown("""<div style="background:#0c1018;border:1px solid rgba(255,255,255,.06);
             border-radius:12px;padding:14px;margin-bottom:10px">
             <span style="font-size:22px">🔵</span>
             <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;
@@ -232,7 +232,7 @@ def show_upload_page():
             key='webinar', label_visibility='collapsed')
 
     with col2:
-        st.markdown(f"""<div style="background:#0c1018;border:1px solid rgba(255,255,255,.06);
+        st.markdown("""<div style="background:#0c1018;border:1px solid rgba(255,255,255,.06);
             border-radius:12px;padding:14px;margin-bottom:10px">
             <span style="font-size:22px">🟠</span>
             <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;
@@ -244,7 +244,7 @@ def show_upload_page():
             key='seminar', label_visibility='collapsed')
 
     with col3:
-        st.markdown(f"""<div style="background:#0c1018;border:1px solid rgba(255,255,255,.06);
+        st.markdown("""<div style="background:#0c1018;border:1px solid rgba(255,255,255,.06);
             border-radius:12px;padding:14px;margin-bottom:10px">
             <span style="font-size:22px">🟣</span>
             <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;
@@ -323,7 +323,7 @@ def show_dashboard_page():
     active     = st.session_state.active_dash
 
     # Top control bar
-    st.markdown(f"""
+    st.markdown("""
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
     <style>
       .dash-bar { display:flex;align-items:center;gap:12px;padding:10px 20px;
@@ -339,7 +339,7 @@ def show_dashboard_page():
     col_logo, col_tabs, col_reset = st.columns([1, 5, 1])
 
     with col_logo:
-        st.markdown(f'''
+        st.markdown("""
 <div class="dash-logo">
   <img src="data:image/png;base64,{logo_base64}" 
        style="width:100%;height:100%;object-fit:contain;">
