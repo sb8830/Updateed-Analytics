@@ -1,27 +1,13 @@
 """
-ms365_connector.py  —  SharePoint Direct Download (No Azure needed!)
+ms365_connector.py  —  SharePoint connector using Microsoft account credentials
+Uses ROPC (Resource Owner Password Credentials) flow — no Azure Portal setup needed
+beyond the built-in Microsoft Office app client ID.
 
-How it works:
-  SharePoint "Anyone with link" share URLs can be downloaded directly
-  by appending &download=1 — no authentication required.
+Secrets needed in Streamlit Cloud:
+  MS_EMAIL    = "admin@admininvesmate360.onmicrosoft.com"
+  MS_PASSWORD = "your-microsoft-password"
 
-SETUP (one-time, 2 minutes per file):
-  For each Excel file in OneDrive/SharePoint:
-  1. Right-click the file → Share
-  2. Change permissions to "Anyone with the link can view"
-  3. Click "Copy link"
-  4. Paste the link into Streamlit Secrets
-
-  Then in Streamlit Cloud → App Settings → Secrets, add:
-    SHARE_URL_WEBINAR  = "https://admininvesmate360-my.sharepoint.com/..."
-    SHARE_URL_SEMINAR  = "https://admininvesmate360-my.sharepoint.com/..."
-    SHARE_URL_ATTENDEE = "https://admininvesmate360-my.sharepoint.com/..."
-
-  When a team member updates the file, just click Refresh — 
-  the dashboard fetches the latest version automatically.
-
-NOTE: The share URLs are stored in secrets (not in code) so they're
-      private and can be updated without redeploying.
+File URLs are hardcoded from your SharePoint links.
 """
 
 import io
@@ -29,109 +15,189 @@ import re
 import requests
 import streamlit as st
 
-# ─── Secret keys ──────────────────────────────────────────────────────────────
-_SECRET_KEYS = {
-    "webinar":  "SHARE_URL_WEBINAR",
-    "seminar":  "SHARE_URL_SEMINAR",
-    "attendee": "SHARE_URL_ATTENDEE",
+# ── Your SharePoint tenant & files (hardcoded from your URLs) ─────────────────
+_TENANT     = "admininvesmate360.onmicrosoft.com"
+_SP_HOST    = "admininvesmate360-my.sharepoint.com"
+
+# Microsoft Office public client ID (works for any M365 tenant, no registration needed)
+_CLIENT_ID  = "d3590ed6-52b3-4102-aeff-aad2292ab01c"   # Microsoft Office
+
+_FILES = {
+    "webinar": {
+        "name":    "Free Class Lead Report.xlsx",
+        "user":    "admin_admininvesmate360_onmicrosoft_com",
+        "item_id": "B4E16F58-734E-403A-8F5E-3E60656AF593",
+    },
+    "seminar": {
+        "name":    "Offline Seminar Report.xlsx",
+        "user":    "admin_admininvesmate360_onmicrosoft_com",
+        "item_id": "A4283220-7EF3-49B5-87DD-B7FD023D436D",
+    },
+    "attendee": {
+        "name":    "Offline Indepth Details.xlsx",
+        "user":    "sourajpal_invesmate_com",
+        "share_encoded": "IQBF8dCDEjW_QrTvqVmFzIP0AZazBviXK0FEtIbUsgch6V0",
+        "share_token":   "wy3zM6",
+    },
 }
 
-_FILE_NAMES = {
-    "webinar":  "Free Class Lead Report.xlsx",
-    "seminar":  "Offline Seminar Report.xlsx",
-    "attendee": "Offline Indepth Details.xlsx",
-}
-
-# ─── URL → Download URL conversion ────────────────────────────────────────────
-def _to_download_url(share_url: str) -> str:
+# ─── GET ACCESS TOKEN via username + password ─────────────────────────────────
+def _get_token() -> str:
     """
-    Convert any SharePoint/OneDrive share URL to a direct download URL.
-
-    Handles all common SharePoint URL formats:
-    - /Doc.aspx?sourcedoc={GUID}&...
-    - /:x:/g/personal/.../ENCODED_ID?e=TOKEN
-    - /:x:/r/personal/.../ENCODED_ID?e=TOKEN
-    - 1drv.ms short links
+    ROPC flow — authenticates with Microsoft using email + password.
+    No Azure app registration required; uses Microsoft Office's built-in client.
     """
-    url = share_url.strip()
+    try:
+        email    = st.secrets["MS_EMAIL"].strip()
+        password = st.secrets["MS_PASSWORD"].strip()
+    except KeyError as e:
+        raise ConnectionError(
+            f"❌ Missing secret: {e}\n"
+            "Add MS_EMAIL and MS_PASSWORD to Streamlit Cloud Secrets."
+        )
 
-    # Already a download URL
-    if "download=1" in url or "/download?" in url:
-        return url
-
-    # Format 1: Doc.aspx with sourcedoc GUID
-    # Convert to direct download via UniqueId
-    m = re.search(r'sourcedoc=%7B([A-F0-9\-]+)%7D', url, re.I)
-    if m:
-        guid = m.group(1)
-        # Extract host and user path
-        host_m = re.search(r'https://([^/]+)', url)
-        user_m = re.search(r'/personal/([^/]+)/', url)
-        if host_m and user_m:
-            host = host_m.group(1)
-            user = user_m.group(1)
-            return (f"https://{host}/personal/{user}/_layouts/15/download.aspx"
-                    f"?UniqueId={guid}")
-
-    # Format 2: Share link with ?e=TOKEN — append &download=1
-    if "?e=" in url:
-        return url + "&download=1"
-
-    # Format 3: Any other SharePoint URL — try appending download=1
-    if "sharepoint.com" in url or "1drv.ms" in url:
-        sep = "&" if "?" in url else "?"
-        return url + sep + "download=1"
-
-    return url
-
-
-# ─── Download a single file ───────────────────────────────────────────────────
-def _download_file(share_url: str, name: str) -> io.BytesIO:
-    """Download a file from a SharePoint share URL."""
-    dl_url  = _to_download_url(share_url)
-    headers = {
-        "User-Agent": "Mozilla/5.0",
-        "Accept":     "application/octet-stream,*/*",
+    url  = f"https://login.microsoftonline.com/{_TENANT}/oauth2/v2.0/token"
+    data = {
+        "grant_type": "password",
+        "client_id":  _CLIENT_ID,
+        "username":   email,
+        "password":   password,
+        "scope":      "https://graph.microsoft.com/.default offline_access",
     }
 
-    resp = requests.get(dl_url, headers=headers, timeout=30, allow_redirects=True)
+    resp = requests.post(url, data=data, timeout=15)
+    body = resp.json()
 
-    # Check if we got an actual Excel file
-    content_type = resp.headers.get("Content-Type", "")
-    if resp.status_code == 200 and (
-        "spreadsheet" in content_type or
-        "octet-stream" in content_type or
-        "excel" in content_type or
-        resp.content[:4] == b'PK\x03\x04'   # ZIP magic bytes (xlsx is a zip)
-    ):
-        return io.BytesIO(resp.content)
+    if resp.status_code != 200:
+        err = body.get("error_description", body.get("error", resp.text))
+        # Common errors with helpful messages
+        if "AADSTS50126" in err or "AADSTS50034" in err:
+            raise ConnectionError(
+                "❌ Wrong email or password.\n"
+                "Check MS_EMAIL and MS_PASSWORD in Streamlit Secrets."
+            )
+        if "AADSTS53003" in err or "conditional" in err.lower():
+            raise ConnectionError(
+                "❌ Conditional Access policy is blocking sign-in.\n"
+                "Your IT admin has restricted password-based login.\n"
+                "Ask your admin to exclude this app from the Conditional Access policy,\n"
+                "or use the Azure App Registration method instead."
+            )
+        if "AADSTS7000218" in err:
+            raise ConnectionError(
+                "❌ Client not allowed to use ROPC flow.\n"
+                "Enable 'Allow public client flows' in your Azure App Registration,\n"
+                "or use the admin's personal Microsoft credentials."
+            )
+        raise ConnectionError(f"❌ Authentication failed:\n{err}")
 
-    # Got HTML (login page) — file is not publicly shared
-    if resp.status_code == 200 and "text/html" in content_type:
+    return body["access_token"]
+
+
+# ─── DOWNLOAD FILE ────────────────────────────────────────────────────────────
+def _download(token: str, file_key: str) -> io.BytesIO:
+    meta    = _FILES[file_key]
+    name    = meta["name"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    # ── Files 1 & 2: use item ID in admin's OneDrive ──────────────────────────
+    if "item_id" in meta:
+        user    = meta["user"]
+        item_id = meta["item_id"]
+
+        # Primary: by item ID
+        url  = f"https://graph.microsoft.com/v1.0/users/{user}/drive/items/{item_id}/content"
+        resp = requests.get(url, headers=headers, timeout=30, allow_redirects=True)
+
+        if resp.status_code == 200 and _is_excel(resp):
+            return io.BytesIO(resp.content)
+
+        # Fallback: search by filename
+        if resp.status_code in (404, 403):
+            q    = requests.utils.quote(name)
+            surl = f"https://graph.microsoft.com/v1.0/users/{user}/drive/root/search(q='{q}')"
+            sr   = requests.get(surl, headers=headers, timeout=15)
+            if sr.status_code == 200:
+                items = sr.json().get("value", [])
+                match = next((i for i in items
+                              if i.get("name","").lower() == name.lower()), None)
+                if match:
+                    dl   = requests.get(
+                        f"https://graph.microsoft.com/v1.0/users/{user}/drive/items/{match['id']}/content",
+                        headers=headers, timeout=30, allow_redirects=True
+                    )
+                    if dl.status_code == 200 and _is_excel(dl):
+                        return io.BytesIO(dl.content)
+
+        _raise_error(resp, name)
+
+    # ── File 3: use share link (Sourajpal's OneDrive) ─────────────────────────
+    else:
+        share_enc   = meta["share_encoded"]
+        share_token = meta["share_token"]
+
+        # Method A: Graph shares endpoint with encoded share ID
+        url_a = f"https://graph.microsoft.com/v1.0/shares/{share_enc}/driveItem/content"
+        resp  = requests.get(url_a, headers=headers, timeout=30, allow_redirects=True)
+        if resp.status_code == 200 and _is_excel(resp):
+            return io.BytesIO(resp.content)
+
+        # Method B: re-encode the share URL properly
+        import base64
+        share_url   = f"https://{_SP_HOST}/:x:/g/personal/{meta['user']}/{share_enc}?e={share_token}"
+        encoded     = base64.urlsafe_b64encode(("u!" + share_url).encode()).decode().rstrip("=")
+        url_b       = f"https://graph.microsoft.com/v1.0/shares/{encoded}/driveItem/content"
+        resp2       = requests.get(url_b, headers=headers, timeout=30, allow_redirects=True)
+        if resp2.status_code == 200 and _is_excel(resp2):
+            return io.BytesIO(resp2.content)
+
+        # Method C: access via Sourajpal's drive directly
+        user  = meta["user"]
+        q     = requests.utils.quote("Offline Indepth Details")
+        surl  = f"https://graph.microsoft.com/v1.0/users/{user}/drive/root/search(q='{q}')"
+        sr    = requests.get(surl, headers=headers, timeout=15)
+        if sr.status_code == 200:
+            items = sr.json().get("value", [])
+            if items:
+                dl = requests.get(
+                    f"https://graph.microsoft.com/v1.0/users/{user}/drive/items/{items[0]['id']}/content",
+                    headers=headers, timeout=30, allow_redirects=True
+                )
+                if dl.status_code == 200 and _is_excel(dl):
+                    return io.BytesIO(dl.content)
+
+        _raise_error(resp, name)
+
+
+def _is_excel(resp) -> bool:
+    ct = resp.headers.get("Content-Type", "")
+    return (
+        "spreadsheet" in ct or
+        "octet-stream" in ct or
+        "excel" in ct or
+        resp.content[:4] == b'PK\x03\x04'
+    )
+
+
+def _raise_error(resp, name: str):
+    s = resp.status_code
+    if s == 401:
         raise PermissionError(
-            f"❌ '{name}' returned a login page instead of the file.\n\n"
-            f"The file is not publicly shared. Please:\n"
-            f"1. Open the file in OneDrive/SharePoint\n"
-            f"2. Click Share → change to 'Anyone with the link can view'\n"
-            f"3. Copy the new link and update SHARE_URL_{name.upper()} in Streamlit Secrets."
+            f"❌ Not authorised to access '{name}'.\n"
+            "Make sure MS_EMAIL has access to this file in SharePoint."
         )
-
-    if resp.status_code == 403:
+    if s == 403:
         raise PermissionError(
             f"❌ Access denied for '{name}' (403).\n"
-            f"Make sure the file is shared as 'Anyone with the link can view'."
+            "The logged-in account doesn't have permission to read this file."
         )
-
-    if resp.status_code == 404:
+    if s == 404:
         raise FileNotFoundError(
             f"❌ File '{name}' not found (404).\n"
-            f"The share link may have expired or been deleted.\n"
-            f"Generate a new share link and update the secret."
+            "The file may have been moved or renamed."
         )
-
     raise RuntimeError(
-        f"❌ Failed to download '{name}': HTTP {resp.status_code}\n"
-        f"URL tried: {dl_url[:100]}"
+        f"❌ Failed to download '{name}': HTTP {s}\n{resp.text[:200]}"
     )
 
 
@@ -139,42 +205,23 @@ def _download_file(share_url: str, name: str) -> io.BytesIO:
 @st.cache_data(ttl=0, show_spinner=False)
 def fetch_excel_files(_cache_bust: int = 0) -> dict:
     """
-    Fetch all 3 Excel files from SharePoint share URLs.
-    URLs are read from Streamlit Secrets.
-    Pass a changing _cache_bust to force re-fetch.
+    Fetch all 3 Excel files using Microsoft account credentials.
+    Credentials are read from Streamlit Secrets.
     """
+    token   = _get_token()
     results = {}
-    for key, secret_key in _SECRET_KEYS.items():
-        name = _FILE_NAMES[key]
-        try:
-            share_url = st.secrets[secret_key]
-        except KeyError:
-            raise ValueError(
-                f"❌ Secret '{secret_key}' not found.\n"
-                f"Go to Streamlit Cloud → App Settings → Secrets and add:\n"
-                f"  {secret_key} = \"your-sharepoint-share-url\""
-            )
-
-        if not share_url or not share_url.strip().startswith("http"):
-            raise ValueError(
-                f"❌ '{secret_key}' is empty or invalid.\n"
-                f"It should be a SharePoint share URL starting with https://"
-            )
-
-        results[key] = _download_file(share_url.strip(), key)
-
+    for key in _FILES:
+        results[key] = _download(token, key)
     return results
 
 
 # ─── SECRETS CHECK ────────────────────────────────────────────────────────────
 def check_secrets_configured() -> tuple:
-    """Returns (all_ok: bool, missing_keys: list)."""
     missing = []
     try:
-        for k in _SECRET_KEYS.values():
-            v = st.secrets.get(k, "")
-            if not v or not str(v).strip().startswith("http"):
+        for k in ["MS_EMAIL", "MS_PASSWORD"]:
+            if not st.secrets.get(k, "").strip():
                 missing.append(k)
     except Exception:
-        missing = list(_SECRET_KEYS.values())
+        missing = ["MS_EMAIL", "MS_PASSWORD"]
     return len(missing) == 0, missing
