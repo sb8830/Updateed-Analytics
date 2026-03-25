@@ -470,36 +470,28 @@ def show_home():
 def _show_ms365_setup():
     """Setup guide shown inside admin expander."""
     st.markdown("""
-### No Azure needed — just SharePoint share links!
+### Just 2 credentials needed — no Azure, no share links!
 
-**For each of the 3 Excel files, do this once:**
+Add your Microsoft 365 account credentials to Streamlit Secrets.  
+The file locations are already hardcoded — nothing else to configure.
 
-1. Open the file in **OneDrive / SharePoint**
-2. Click **Share** (top right)
-3. Click the settings gear icon → change to **"Anyone with the link can view"**
-4. Click **Copy link**
-5. Paste into Streamlit Secrets (see below)
-
----
-
-**Add to Streamlit Cloud → App Settings → Secrets:**
+**Streamlit Cloud → App Settings → Secrets:**
 ```toml
-SHARE_URL_WEBINAR  = "https://admininvesmate360-my.sharepoint.com/..."
-SHARE_URL_SEMINAR  = "https://admininvesmate360-my.sharepoint.com/..."
-SHARE_URL_ATTENDEE = "https://admininvesmate360-my.sharepoint.com/..."
+MS_EMAIL    = "admin@admininvesmate360.onmicrosoft.com"
+MS_PASSWORD = "your-microsoft-365-password"
 ```
 
-After saving secrets, click **🔄 Refresh & Build** to load the latest data.  
-Every time your team updates the Excel files, just click Refresh — no redeployment needed.
+After saving, click **🔄 Refresh & Build** to load live data.  
+Every time your team updates the Excel files, just click Refresh.
 """)
 
     # Secrets status check
     ok, missing = check_secrets_configured()
     if ok:
-        st.success("✅ All 3 share URLs configured. Click **🔄 Refresh & Build** to load live data.")
+        st.success("✅ Credentials configured. Click **🔄 Refresh & Build** to load live data.")
     else:
         st.error(f"❌ Missing secrets: {', '.join(missing)}")
-        st.info("Add the SharePoint share URLs in Streamlit Cloud → App Settings → Secrets.")
+        st.info("Add MS_EMAIL and MS_PASSWORD in Streamlit Cloud → App Settings → Secrets.")
 
 
 # ─── DASHBOARD ────────────────────────────────────────────────────────────────
